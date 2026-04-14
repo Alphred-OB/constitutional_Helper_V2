@@ -1,0 +1,118 @@
+# Environment Variables & Secrets (CRITICAL - NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+.streamlit/secrets.toml
+*.pem
+*.key
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+.pytest_cache/
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Streamlit Cache
+.streamlit/
+.streamlit_cache/
+.streamlit_tmp/
+
+# Cache & Embeddings (rebuild on first run)
+*.pkl
+*.pickle
+constitution_embeddings.pkl
+
+# Audio Output
+reply.mp3
+*.mp3
+*.wav
+
+# Logs (NEVER COMMIT)
+*.log
+logs/
+debug_logs/
+constitutional_helper.log
+
+# Large Files
+*.pdf
+*.csv
+*.xlsx
+*.parquet
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*~
+.tmp/
+
+# OS
+Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# CI/CD Temp Files
+.github/workflows/temp/
+
+# Certificates (local testing)
+*.crt
+*.cert
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Testing
+test_output/
+test_*.csv
+local_tests/
+
+# Build Artifacts
+*.whl
+*.tar.gz
+*.zip
+
+# Keep Important Files
+!.gitkeep
+!requirements.txt
+!config.py
+!app.py
+!rag.py
+!icons.py
+!SETUP.md
+!CODE_REVIEW.md
+!test_constitutional_helper.py

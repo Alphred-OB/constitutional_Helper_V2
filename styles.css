@@ -1,0 +1,250 @@
+/* Constitutional Helper Styles */
+
+:root {
+  --primary-color: #22C55E;
+  --primary-dark: #16A34A;
+  --accent-color: #15803D;
+  --warning-color: #EA580C;
+  --error-color: #dc2626;
+  --bg-primary: #ffffff;
+  --bg-secondary: #F8FAFC;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --border-color: #E2E8F0;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark Mode Override */
+[data-theme="dark"] {
+  --primary-color: #4ADE80;
+  --primary-dark: #22C55E;
+  --accent-color: #86EFAC;
+  --warning-color: #fb923c;
+  --error-color: #f87171;
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --border-color: #334155;
+}
+
+/* Base Elements */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Chat Bubbles */
+.chat-bubble {
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin: 12px 0;
+  box-shadow: var(--shadow);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 85%;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.user-bubble {
+  background-color: var(--primary-color);
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.assistant-bubble {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 4px;
+}
+
+/* Message Container */
+.message-container {
+  display: flex;
+  align-items: flex-start;
+  margin: 12px 0;
+  gap: 12px;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+.message-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.message-content {
+  flex: 1;
+  padding: 14px 18px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Article Badges */
+.article-badge {
+  display: inline-block;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 4px;
+  white-space: nowrap;
+}
+
+.article-badge:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* Buttons */
+.stButton > button {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 20px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stButton > button:hover {
+  background-color: var(--primary-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(31, 119, 180, 0.3) !important;
+}
+
+/* Input Fields */
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(31, 119, 180, 0.1) !important;
+}
+
+/* Selectbox */
+.stSelectbox > div > div > div {
+  border-radius: 8px !important;
+}
+
+/* Info/Warning/Error Boxes */
+.stAlert {
+  border-radius: 8px !important;
+  padding: 16px !important;
+}
+
+.stSuccess {
+  background-color: #d4edda !important;
+  border: 1px solid #c3e6cb !important;
+  color: #155724 !important;
+}
+
+.stInfo {
+  background-color: #d1ecf1 !important;
+  border: 1px solid #bee5eb !important;
+  color: #0c5460 !important;
+}
+
+.stWarning {
+  background-color: #fff3cd !important;
+  border: 1px solid #ffeeba !important;
+  color: #856404 !important;
+}
+
+.stError {
+  background-color: #f8d7da !important;
+  border: 1px solid #f5c6cb !important;
+  color: #721c24 !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mb-5 {
+  margin-bottom: 5px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chat-bubble,
+  .message-content {
+    max-width: 95%;
+  }
+
+  .message-container {
+    gap: 8px;
+  }
+
+  .message-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
