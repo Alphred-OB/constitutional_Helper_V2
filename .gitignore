@@ -45,11 +45,6 @@ pip-delete-this-directory.txt
 .streamlit_cache/
 .streamlit_tmp/
 
-# Cache & Embeddings (rebuild on first run)
-*.pkl
-*.pickle
-constitution_embeddings.pkl
-
 # Audio Output
 reply.mp3
 *.mp3
