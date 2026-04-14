@@ -650,28 +650,19 @@ with st.sidebar:
     # Download button
     st.markdown("**Downloads**")
     try:
-        # Try to load from PDF first
         if os.path.exists(PDF_PATH):
             with open(PDF_PATH, "rb") as file:
                 pdf_data = file.read()
             st.download_button(
-                label="📄 Download PDF",
+                label="📄 Download Constitution (PDF)",
                 data=pdf_data,
                 file_name="Ghana_1992_Constitution.pdf",
                 mime="application/pdf",
                 use_container_width=True
             )
+            st.caption("Complete Ghana 1992 Constitution")
         else:
-            # Generate from chunks if PDF not available
-            constitution_text = generate_constitution_file(st.session_state.get("chunks", []))
-            st.download_button(
-                label="📄 Download Constitution (Markdown)",
-                data=constitution_text,
-                file_name="Ghana_1992_Constitution.md",
-                mime="text/markdown",
-                use_container_width=True
-            )
-            st.caption("Generated from constitutional articles", help="Compiled from 675 constitution chunks")
+            st.warning("Constitution PDF not available for download")
     except Exception as e:
         logger.error(f"Download error: {e}")
         st.warning("Download unavailable")
