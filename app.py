@@ -386,43 +386,6 @@ Question: {question}"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  CONSTITUTION DOWNLOAD
-# ─────────────────────────────────────────────────────────────────────────────
-def generate_constitution_file(chunks: list) -> str:
-    """
-    Generate constitution content from chunks for download (on-demand only).
-    
-    Args:
-        chunks: List of constitution chunks
-    
-    Returns:
-        str: Markdown-formatted constitution text
-    """
-    content = []
-    content.append("# GHANA'S 1992 CONSTITUTION\n")
-    content.append("*Compiled from constitutional articles and provisions*\n")
-    content.append("---\n\n")
-    
-    current_chapter = None
-    for chunk in chunks:
-        chapter = chunk.get("chapter", "")
-        article = chunk.get("article", "")
-        text = chunk.get("text", "")
-        
-        if chapter and chapter != current_chapter:
-            content.append(f"\n## {chapter}\n\n")
-            current_chapter = chapter
-        
-        if article:
-            content.append(f"### {article}\n\n")
-        
-        content.append(f"{text}\n\n")
-        content.append("---\n\n")
-    
-    return "\n".join(content)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 #  MESSAGE RENDERING
 # ─────────────────────────────────────────────────────────────────────────────
 def render_message(role: str, content: str, idx: int = None) -> None:
@@ -645,28 +608,6 @@ with st.sidebar:
     lang = st.session_state.get("language", DEFAULT_LANGUAGE)
     st.markdown(f"<p style='font-size:12px;color:{THEME['BRAND_600']};margin-top:4px'>"
                 f"Active: {lang}</p>", unsafe_allow_html=True)
-    st.divider()
-    
-    # Download button
-    st.markdown("**Downloads**")
-    try:
-        if os.path.exists(PDF_PATH):
-            with open(PDF_PATH, "rb") as file:
-                pdf_data = file.read()
-            st.download_button(
-                label="📄 Download Constitution (PDF)",
-                data=pdf_data,
-                file_name="Ghana_1992_Constitution.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
-            st.caption("Complete Ghana 1992 Constitution")
-        else:
-            st.warning("Constitution PDF not available for download")
-    except Exception as e:
-        logger.error(f"Download error: {e}")
-        st.warning("Download unavailable")
-    
     st.divider()
     
     # Quick topics
