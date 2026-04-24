@@ -9,15 +9,17 @@ import os
 #  LLM CONFIGURATION
 # ─────────────────────────────────────────────────────────────────
 # Using Groq API for cloud-based LLM inference
-LLM_MODEL = "llama-3.3-70b-versatile"
-LLM_MAX_TOKENS = 600
-LLM_TEMPERATURE = 0.2  # Lower = more deterministic, better for factual Q&A
+# PERFORMANCE NOTE: 70B model gives best quality. For 3x faster responses, use:
+#   LLM_MODEL = "llama-3.1-8b-instant"
+LLM_MODEL = "llama-3.1-8b-instant"
+LLM_MAX_TOKENS = 400  # Reduced for faster responses
+LLM_TEMPERATURE = 0.0  # Zero = maximum speed and determinism for factual Q&A
 
 # ─────────────────────────────────────────────────────────────────
 #  RAG CONFIGURATION
 # ─────────────────────────────────────────────────────────────────
-RAG_TOP_N = 5  # Number of relevant articles to retrieve
-RAG_SIMILARITY_THRESHOLD = 0.15  # Minimum cosine similarity score
+RAG_TOP_N = 5  # Increased for better context coverage
+RAG_SIMILARITY_THRESHOLD = 0.28  # Higher threshold to filter out irrelevant 'noise'
 CHUNKS_PATH = "constitution_chunks.json"
 EMBEDDINGS_PATH = "constitution_embeddings.pkl"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
@@ -32,30 +34,30 @@ PDF_MAX_SIZE_MB = 50
 #  UI CONFIGURATION
 # ─────────────────────────────────────────────────────────────────
 PAGE_TITLE = "Constitutional Helper"
-PAGE_ICON = "⚖"
+PAGE_ICON = "favicon.png"
 APP_LAYOUT = "wide"
-SIDEBAR_STATE = "expanded"
+SIDEBAR_STATE = "collapsed"
 
 # ─────────────────────────────────────────────────────────────────
-#  THEME COLORS
+#  THEME COLORS (Dark Slate #32394a)
 # ─────────────────────────────────────────────────────────────────
 THEME = {
-    "BRAND_50": "#F0FDF4",
-    "BRAND_100": "#DCFCE7",
-    "BRAND_200": "#BBF7D0",
-    "BRAND_300": "#86EFAC",
-    "BRAND_400": "#4ADE80",
-    "BRAND_500": "#22C55E",
-    "BRAND_600": "#16A34A",
-    "BRAND_700": "#15803D",
-    "BRAND_800": "#166534",
-    "BRAND_900": "#14532D",
+    "BRAND_50": "#F1F2F4",
+    "BRAND_100": "#E4E6E9",
+    "BRAND_200": "#C9CED4",
+    "BRAND_300": "#AEB5BF",
+    "BRAND_400": "#939DAA",
+    "BRAND_500": "#32394a",  # Primary dark slate
+    "BRAND_600": "#2D333F",
+    "BRAND_700": "#282E38",
+    "BRAND_800": "#1F242C",
+    "BRAND_900": "#161920",
     "BG": "#FFFFFF",
-    "SURFACE": "#F8FAFC",
-    "SURFACE2": "#F1F5F9",
-    "BORDER": "#E2E8F0",
-    "TEXT": "#0F172A",
-    "TEXT2": "#475569",
+    "SURFACE": "#FAFAFA",
+    "SURFACE2": "#F5F5F7",
+    "BORDER": "#E5E7EB",
+    "TEXT": "#1D1D1F",
+    "TEXT2": "#86868B",
 }
 
 # ─────────────────────────────────────────────────────────────────
@@ -75,11 +77,11 @@ DEFAULT_LANGUAGE = "English"
 # ─────────────────────────────────────────────────────────────────
 #  AUDIO SETTINGS
 # ─────────────────────────────────────────────────────────────────
-ENABLE_AUDIO = True
+ENABLE_AUDIO = True  # Re-enabled for user
 AUDIO_MAX_LENGTH = 600  # Characters to convert to speech
 TTS_LANGUAGE_MAP = {
     "English": "en-uk",
-    "Twi": "ak",  # Akan (Twi) language code
+    "Twi": "en",  # gTTS doesn't support Twi/Akan natively, falling back to English for playback
 }
 
 # ─────────────────────────────────────────────────────────────────
@@ -92,13 +94,13 @@ LOG_LEVEL = "INFO"
 #  QUICK TOPICS (Sidebar shortcuts)
 # ─────────────────────────────────────────────────────────────────
 QUICK_TOPICS = {
-    "Fundamental Rights": "What are the fundamental human rights of every Ghanaian under the Constitution?",
-    "Rights When Arrested": "What are my rights if I am arrested in Ghana?",
-    "Becoming President": "What are the qualifications to become President of Ghana?",
-    "How Parliament Works": "How does Parliament work in Ghana and how are laws made?",
-    "Role of the Judiciary": "What is the role of the Judiciary in Ghana?",
-    "Elections in Ghana": "How do elections work in Ghana according to the Constitution?",
-    "Amending Constitution": "How can Ghana's Constitution be amended?"
+    "Police & Arrests": "What are my rights if I am arrested or stopped by the police in Ghana?",
+    "Fundamental Rights": "What are the basic human rights every Ghanaian is entitled to?",
+    "Presidential Rules": "What are the requirements to become President of Ghana?",
+    "Making Laws": "How does Parliament actually make laws for the country?",
+    "Land & Property": "What does the Constitution say about land ownership and property rights?",
+    "Voting Rights": "Who is allowed to vote in Ghana and how is the process protected?",
+    "Amending the Law": "Can we change the Constitution? How does that process work?"
 }
 
 # ─────────────────────────────────────────────────────────────────

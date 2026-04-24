@@ -38,39 +38,18 @@ SIMILARITY_THRESHOLD = 0.15
 DEFAULT_TOP_N = 5
 
 # ── Singleton model cache ─────────────────────────────────────────────────────
-_model = None
+import streamlit as st
 
+@st.cache_resource(show_spinner=False)
 def _get_model():
-    """
-    Load the SentenceTransformer model ONCE and cache it.
-    
-    Subsequent calls return the cached instance (no reload).
-    All queries reuse the same model instance for efficiency.
-    
-    Returns:
-        SentenceTransformer: The embedding model (384-dimensional vectors)
-        
-    Raises:
-        ImportError: If sentence-transformers is not installed
-        Exception: If model download fails (e.g., network issues)
-    """
-    global _model
-    if _model is None:
-        try:
-            from sentence_transformers import SentenceTransformer
-            logger.info(f"Loading SentenceTransformer model: {MODEL_NAME}")
-            _model = SentenceTransformer(MODEL_NAME)
-            logger.info("Model loaded successfully")
-        except ImportError:
-            logger.error("sentence-transformers not installed. Run: pip install sentence-transformers")
-            raise
-        except Exception as e:
-            logger.error(f"Failed to load model: {e}")
-            raise
-    return _model
+    """Load the SentenceTransformer model ONCE and cache it in memory."""
+    from sentence_transformers import SentenceTransformer
+    logger.info(f"Loading SentenceTransformer model: {MODEL_NAME}")
+    return SentenceTransformer(MODEL_NAME)
 
 
 # ── Load constitution chunks from JSON ───────────────────────────────────────
+@st.cache_data
 def load_chunks(path: str = CHUNKS_PATH) -> List[Dict]:
     """
     Load constitution chunks from JSON file.
@@ -129,6 +108,7 @@ def load_chunks(path: str = CHUNKS_PATH) -> List[Dict]:
 
 
 # ── Get or create embeddings ──────────────────────────────────────────────────
+@st.cache_data
 def load_or_build_embeddings(chunks: List[Dict], cache_path: str = EMBEDDINGS_PATH) -> np.ndarray:
     """
     Load or build semantic embeddings for constitution chunks.
