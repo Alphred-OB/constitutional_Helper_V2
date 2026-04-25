@@ -29,7 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from groq import AsyncGroq
 
 # Initialize RAG and AsyncGroq
@@ -129,6 +130,21 @@ async def chat(request: ChatRequest):
     except Exception as e:
         logger.error(f"Chat error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# --- STATIC FILE SERVING (For Deployment) ---
+@app.get("/")
+async def serve_home():
+    # Relative to the root project directory
+    home_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "homepage", "index.html")
+    return FileResponse(home_path)
+
+@app.get("/app")
+async def serve_app():
+    app_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
+    return FileResponse(app_path)
+
+# Mount the entire v2 directory for assets (js, css, etc.)
+app.mount("/v2", StaticFiles(directory="v2"), name="v2")
 
 if __name__ == "__main__":
     import uvicorn

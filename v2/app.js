@@ -5,7 +5,7 @@ const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 const languageSelect = document.getElementById('languageSelect');
 
-const API_URL = 'http://localhost:8000';
+const API_URL = window.location.origin;
 
 function addMessage(role, content, context = []) {
     welcomeState.style.display = 'none';
