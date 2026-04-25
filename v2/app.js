@@ -299,3 +299,81 @@ userInput.addEventListener('keydown', (e) => {
         sendMessage();
     }
 });
+
+// --- Voice Input Logic ---
+const micBtn = document.getElementById('micBtn');
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+micBtn.addEventListener('click', async () => {
+    if (!isRecording) {
+        startRecording();
+    } else {
+        stopRecording();
+    }
+});
+
+async function startRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            transcribeAudio(audioBlob);
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        micBtn.classList.add('recording');
+        micBtn.innerHTML = '<i data-lucide="square" class="w-6 h-6"></i>';
+        lucide.createIcons();
+        userInput.placeholder = "Listening...";
+    } catch (err) {
+        console.error("Microphone access denied", err);
+        alert("Please allow microphone access to use voice input.");
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        micBtn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>';
+        lucide.createIcons();
+    }
+}
+
+async function transcribeAudio(blob) {
+    const formData = new FormData();
+    formData.append('file', blob, 'audio.wav');
+
+    try {
+        const response = await fetch(`${API_URL}/transcribe`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        
+        if (data.text) {
+            userInput.value = data.text;
+            userInput.style.height = 'auto';
+            userInput.style.height = userInput.scrollHeight + 'px';
+            userInput.focus();
+        }
+    } catch (err) {
+        console.error("Transcription failed", err);
+    } finally {
+        micBtn.innerHTML = '<i data-lucide="mic" class="w-6 h-6"></i>';
+        userInput.placeholder = "Ask anything about the Constitution...";
+        lucide.createIcons();
+    }
+}

@@ -4,7 +4,7 @@ import base64
 import asyncio
 import logging
 import edge_tts
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -76,6 +76,29 @@ async def download_constitution():
         return FileResponse(pdf_path, filename="1992_Constitution_of_Ghana.pdf", media_type="application/pdf")
     
     raise HTTPException(status_code=404, detail="Constitution PDF not found")
+
+@app.post("/transcribe")
+async def transcribe(file: UploadFile = File(...)):
+    try:
+        # 1. Read file
+        contents = await file.read()
+        
+        # 2. Call Groq Whisper
+        # Note: Groq expects a file-like object with a name
+        import io
+        audio_file = io.BytesIO(contents)
+        audio_file.name = "audio.wav"
+        
+        transcription = await groq_client.audio.transcriptions.create(
+            file=audio_file,
+            model="whisper-large-v3",
+            response_format="json",
+        )
+        
+        return {"text": transcription.text}
+    except Exception as e:
+        logger.error(f"Transcription error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
