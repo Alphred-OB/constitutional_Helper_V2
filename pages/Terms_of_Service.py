@@ -145,7 +145,7 @@ remain in full force and effect.
 For questions about these Terms, contact the **GhanaLex Team**.
 
 </div>
-""")
+""", unsafe_allow_html=True)
 
 # Footer
 st.markdown("""

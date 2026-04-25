@@ -149,7 +149,10 @@ def load_or_build_embeddings(chunks: List[Dict], cache_path: str = EMBEDDINGS_PA
             if len(embeddings) != len(chunks):
                 logger.warning(f"Embedding cache size ({len(embeddings)}) != chunks size ({len(chunks)}). Rebuilding...")
             else:
-                logger.info(f"Embeddings loaded. Shape: {embeddings.shape}")
+                # Ensure they are normalized
+                norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+                embeddings = embeddings / (norms + 1e-10)
+                logger.info(f"Embeddings loaded and normalized. Shape: {embeddings.shape}")
                 return embeddings
         except Exception as e:
             logger.warning(f"Failed to load cached embeddings: {e}. Rebuilding...")
@@ -167,6 +170,10 @@ def load_or_build_embeddings(chunks: List[Dict], cache_path: str = EMBEDDINGS_PA
         embeddings = model.encode(texts, show_progress_bar=True, batch_size=32)
         
         logger.info(f"Embeddings shape: {embeddings.shape}")
+        
+        # Normalize embeddings for faster dot-product similarity later
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        embeddings = embeddings / (norms + 1e-10)
         
         # Cache to disk
         try:
@@ -268,9 +275,14 @@ def search(
         if not (0.0 <= threshold <= 1.0):
             raise ValueError(f"Threshold must be between 0.0 and 1.0, got {threshold}")
         
-        # Encode query and compute similarities
-        query_embedding = encode_query(query)
-        scores = cosine_similarity(query_embedding, embeddings).flatten()
+        # Encode query and normalize it
+        query_embedding = encode_query(query).flatten()
+        query_norm = np.linalg.norm(query_embedding)
+        if query_norm > 1e-10:
+            query_embedding = query_embedding / query_norm
+            
+        # Since chunks are pre-normalized, dot product is cosine similarity
+        scores = np.dot(embeddings, query_embedding)
         
         # Sort by score and get top indices
         top_indices = np.argsort(scores)[::-1][:top_n]

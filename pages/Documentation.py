@@ -12,11 +12,10 @@ if os.path.exists(css_file):
     with open(css_file, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
+st.markdown('<div class="page-container">', unsafe_allow_html=True)
+st.markdown('<a href="/" target="_self" class="back-link">← Back to Constitutional Helper</a>', unsafe_allow_html=True)
+
 st.markdown("""
-<div class="page-container">
-
-<a href="/" target="_self" class="back-link">← Back to Constitutional Helper</a>
-
 # Documentation
 
 ## Overview
@@ -84,9 +83,9 @@ Every answer includes:
 ## Contact
 
 For questions, feedback, or contributions, reach out to the **GhanaLex Team**.
-
-</div>
 """)
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 st.markdown("""

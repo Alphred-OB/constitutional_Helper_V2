@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitutional Helper - Understand Ghana's Constitution Instantly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-green': '#22C55E',
+                        'brand-dark': '#16A34A',
+                        'brand-deepest': '#15803D',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #0F172A;
+            background-color: #FFFFFF;
+            overflow-x: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #F0FDF4 0%, #F8FAFC 100%);
+        }
+        
+        .btn-primary {
+            background-color: #22C55E;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: #16A34A;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: #22C55E;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            border: 2px solid #22C55E;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #F0FDF4;
+            border-color: #16A34A;
+            color: #16A34A;
+        }
+        
+        .section-title {
+            font-size: clamp(1.7rem, 3.2vw, 2.2rem);
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+        
+        .section-subtitle {
+            font-size: clamp(0.98rem, 1.6vw, 1.12rem);
+            color: #64748B;
+            margin-bottom: 40px;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .feature-card:hover {
+            box-shadow: 0 12px 24px rgba(34, 197, 94, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .features-bento {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .feature-tile {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .feature-tile:hover {
+            transform: translateY(-4px);
+            border-color: #CFEFDB;
+            box-shadow: 0 14px 30px rgba(34, 197, 94, 0.14);
+        }
+
+        .feature-tile-main {
+            background: linear-gradient(145deg, #F8FFFB 0%, #F2FCF7 100%);
+            border-color: #CFEFDB;
+        }
+
+        .feature-icon-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #EAFBF1;
+            color: #16A34A;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            line-height: 1.2;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 8px;
+        }
+
+        .feature-copy {
+            color: #475569;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .feature-points {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .feature-point {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #D9EFE2;
+            background: #FFFFFF;
+            color: #166534;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        @keyframes featureRise {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .feature-tile {
+                opacity: 0;
+                transform: translateY(14px);
+                animation: featureRise 0.55s ease forwards;
+            }
+
+            .feature-tile:nth-child(1) { animation-delay: 0.05s; }
+            .feature-tile:nth-child(2) { animation-delay: 0.12s; }
+            .feature-tile:nth-child(3) { animation-delay: 0.19s; }
+            .feature-tile:nth-child(4) { animation-delay: 0.26s; }
+            .feature-tile:nth-child(5) { animation-delay: 0.33s; }
+            .feature-tile:nth-child(6) { animation-delay: 0.4s; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .feature-tile {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .features-bento {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .feature-tile-main {
+                grid-column: span 2;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .features-bento {
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+                grid-auto-rows: minmax(140px, auto);
+            }
+
+            .feature-tile-main {
+                grid-column: 1 / span 7;
+                grid-row: 1 / span 2;
+            }
+
+            .feature-tile--language {
+                grid-column: 8 / span 5;
+                grid-row: 1;
+            }
+
+            .feature-tile--speed {
+                grid-column: 8 / span 5;
+                grid-row: 2;
+            }
+
+            .feature-tile--free {
+                grid-column: 1 / span 4;
+                grid-row: 3;
+            }
+
+            .feature-tile--online {
+                grid-column: 5 / span 4;
+                grid-row: 3;
+            }
+
+            .feature-tile--mobile {
+                grid-column: 9 / span 4;
+                grid-row: 3;
+            }
+        }
+        
+        .icon-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #F0FDF4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22C55E;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #22C55E;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-alt {
+            background-color: #F8FAFC;
+        }
+        
+        nav {
+            background: white;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        nav a {
+            color: #64748B;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: #22C55E;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid #E2E8F0;
+            padding: 20px 0;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #0F172A;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: #64748B;
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        .icon-bg-green {
+            color: #22C55E;
+        }
+
+        .hero-title {
+            font-size: clamp(3.1rem, 7vw, 6.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            font-weight: 800;
+            color: #0B1535;
+        }
+
+        .hero-title-muted {
+            color: #B8C2CF;
+        }
+
+        .hero-rotator {
+            position: relative;
+            height: 1.05em;
+            overflow: hidden;
+            margin-top: 0.15em;
+        }
+
+        .hero-rotator-track {
+            display: flex;
+            flex-direction: column;
+            animation: heroTextSlide 9s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .hero-rotator-item {
+            line-height: 1.05;
+        }
+
+        @keyframes heroTextSlide {
+            0%, 25% {
+                transform: translateY(0);
+            }
+            33%, 58% {
+                transform: translateY(-1.05em);
+            }
+            66%, 91% {
+                transform: translateY(-2.1em);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .hero-underline {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-underline::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 100%;
+            height: 12px;
+            border-bottom: 6px solid #22C55E;
+            border-radius: 999px;
+            transform: rotate(-0.7deg);
+        }
+
+        .hero-copy {
+            max-width: 560px;
+            font-size: clamp(1.05rem, 2.3vw, 2rem);
+            color: #64748B;
+            line-height: 1.45;
+        }
+
+        .hero-benefits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+        }
+
+        .hero-benefits > div {
+            min-width: fit-content;
+        }
+
+        .audience-bento {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .audience-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .audience-card:hover {
+            transform: translateY(-4px);
+            border-color: #BFE9CF;
+            box-shadow: 0 16px 30px rgba(34, 197, 94, 0.12);
+        }
+
+        .audience-card-featured {
+            background: linear-gradient(140deg, #F8FFFB 0%, #EEFDF3 100%);
+            border-color: #CFEFDB;
+        }
+
+        .audience-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #EAFBF1;
+            color: #22C55E;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            margin-bottom: 14px;
+        }
+
+        .audience-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 8px;
+        }
+
+        .audience-title-sm {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 8px;
+        }
+
+        .audience-copy {
+            color: #475569;
+            line-height: 1.55;
+            font-size: 1rem;
+        }
+
+        .audience-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #DDF9E9;
+            color: #15803D;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .audience-bento {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-auto-rows: minmax(170px, auto);
+            }
+
+            .audience-card-featured {
+                grid-column: span 2;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .audience-bento {
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+                grid-auto-rows: minmax(160px, auto);
+            }
+
+            .audience-card-featured {
+                grid-column: 1 / span 7;
+                grid-row: 1 / span 2;
+            }
+
+            .audience-card--voters {
+                grid-column: 8 / span 5;
+                grid-row: 1;
+            }
+
+            .audience-card--teachers {
+                grid-column: 8 / span 5;
+                grid-row: 2;
+            }
+
+            .audience-card--citizens {
+                grid-column: 1 / span 12;
+                grid-row: 3;
+            }
+
+            .audience-card--citizens .audience-copy {
+                max-width: 760px;
+            }
+
+            .audience-card {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .audience-card-featured .audience-copy {
+                max-width: 520px;
+            }
+        }
+
+        .how-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .how-step {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 20px;
+            padding: 28px 20px 24px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .how-step:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 36px rgba(34, 197, 94, 0.14);
+            border-color: #CFEFDB;
+        }
+
+        .how-step-number {
+            width: 46px;
+            height: 46px;
+            margin: 0 auto 18px;
+            border-radius: 999px;
+            background: linear-gradient(140deg, #22C55E, #16A34A);
+            color: #FFFFFF;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.28);
+        }
+
+        .how-step-title {
+            font-size: 1.85rem;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            color: #0F172A;
+            font-weight: 700;
+        }
+
+        .how-step-text {
+            color: #475569;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        @keyframes riseIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .how-step {
+                opacity: 0;
+                transform: translateY(20px);
+                animation: riseIn 0.7s ease forwards;
+            }
+
+            .how-step:nth-child(1) {
+                animation-delay: 0.08s;
+            }
+
+            .how-step:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .how-step:nth-child(3) {
+                animation-delay: 0.32s;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 24px;
+            }
+
+            .hero-underline::after {
+                bottom: -6px;
+                height: 8px;
+                border-bottom-width: 4px;
+            }
+
+            .hero-copy {
+                font-size: 1.1rem;
+            }
+
+            .how-step-title {
+                font-size: 1.55rem;
+            }
+
+            .how-step-text {
+                font-size: 1.06rem;
+            }
+
+            .hero-benefits {
+                margin-top: 1.5rem;
+                gap: 8px 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .btn-primary,
+            .btn-secondary {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .feature-tile,
+            .audience-card,
+            .how-step {
+                padding: 18px;
+            }
+
+            .section-subtitle {
+                margin-bottom: 28px;
+            }
+
+            .faq-item {
+                padding: 16px 0;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .how-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 26px;
+            }
+
+            .how-grid::before {
+                content: "";
+                position: absolute;
+                left: 14%;
+                right: 14%;
+                top: 50px;
+                height: 2px;
+                background: linear-gradient(90deg, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.38), rgba(34, 197, 94, 0.12));
+                z-index: 0;
+            }
+
+            .how-step {
+                position: relative;
+                z-index: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .how-step,
+            .hero-rotator-track {
+                animation: none;
+            }
+
+            .how-step {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-brand-green rounded-lg flex items-center justify-center text-white font-bold text-sm">CH</div>
+                <span class="font-bold text-sm text-gray-800">Constitutional Helper</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#how-it-works">How it Works</a>
+                <a href="#features">Features</a>
+                <a href="#access">Access</a>
+                <a href="#faq">FAQ</a>
+                <a href="../index.html" class="btn-primary">Try Online</a>
+            </div>
+            <a href="../index.html" class="md:hidden btn-primary text-xs">Try Online</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-[1.1fr_1fr] gap-10 md:gap-6 items-center">
+                <div class="hero">
+                    <div class="inline-block bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                        <i class="fas fa-book-open mr-2"></i>AI-Powered Constitutional Assistant
+                    </div>
+                    <h1 class="hero-title mb-6">
+                        <span class="block">Know</span>
+                        <span class="block">Ghana's</span>
+                        <span class="block text-brand-green hero-underline">Constitution</span>
+                        <span class="block hero-title-muted hero-rotator">
+                            <span class="hero-rotator-track">
+                                <span class="hero-rotator-item">Instantly.</span>
+                                <span class="hero-rotator-item">Clearly.</span>
+                                <span class="hero-rotator-item">Confidently.</span>
+                            </span>
+                        </span>
+                    </h1>
+                    <p class="hero-copy mb-6">
+                        Ask any constitutional question and get accurate answers in English or Asante Twi, powered by AI.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="../index.html" class="btn-primary text-center">
+                            <i class="fas fa-globe mr-2"></i>Try Online Now
+                        </a>
+                        <a href="#access" class="btn-secondary text-center">See Access Options</a>
+                    </div>
+                    <div class="hero-benefits mt-12 text-sm">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check text-brand-green text-lg"></i>
+                            <span>Instant Answers</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check text-brand-green text-lg"></i>
+                            <span>Cited Sources</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check text-brand-green text-lg"></i>
+                            <span>Free to Use</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center md:justify-end mt-8 md:mt-0">
+                    <div class="relative w-full max-w-xs sm:max-w-sm md:max-w-2xl">
+                        <img src="./hero-illustration-BKCKtbeM.png" alt="Illustration of Ghana's Constitution" class="w-full h-auto object-contain drop-shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Getting answers about Ghana's Constitution has never been easier</p>
+            </div>
+            
+            <div class="how-grid">
+                <!-- Step 1 -->
+                <article class="how-step">
+                    <div class="how-step-number">1</div>
+                    <h3 class="how-step-title">Ask Your Question</h3>
+                    <p class="how-step-text">Type any question about Ghana's Constitution in English or Asante Twi.</p>
+                </article>
+                
+                <!-- Step 2 -->
+                <article class="how-step">
+                    <div class="how-step-number">2</div>
+                    <h3 class="how-step-title">AI Searches</h3>
+                    <p class="how-step-text">The assistant searches constitutional articles and matches relevant sections instantly.</p>
+                </article>
+                
+                <!-- Step 3 -->
+                <article class="how-step">
+                    <div class="how-step-number">3</div>
+                    <h3 class="how-step-title">Get Answers</h3>
+                    <p class="how-step-text">Receive clear answers with references from the Constitution for confidence and clarity.</p>
+                </article>
+            </div>
+            
+            <!-- Example Questions -->
+            <div class="mt-20">
+                <h3 class="text-center text-xl font-bold mb-12">Example Questions You Can Ask</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-start gap-4">
+                        <div class="text-brand-green text-xl flex-shrink-0"><i class="fas fa-circle-check"></i></div>
+                        <div>
+                            <p class="font-semibold text-gray-800">What are my fundamental rights?</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-start gap-4">
+                        <div class="text-brand-green text-xl flex-shrink-0"><i class="fas fa-circle-check"></i></div>
+                        <div>
+                            <p class="font-semibold text-gray-800">How do elections work in Ghana?</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-start gap-4">
+                        <div class="text-brand-green text-xl flex-shrink-0"><i class="fas fa-circle-check"></i></div>
+                        <div>
+                            <p class="font-semibold text-gray-800">What does the Constitution say about education?</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-start gap-4">
+                        <div class="text-brand-green text-xl flex-shrink-0"><i class="fas fa-circle-check"></i></div>
+                        <div>
+                            <p class="font-semibold text-gray-800">What are my voting rights?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section-alt py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="section-title">Powerful Features</h2>
+                <p class="section-subtitle">Built with everything you need to understand your constitutional rights</p>
+            </div>
+            
+            <div class="features-bento">
+                <article class="feature-tile feature-tile-main">
+                    <div class="feature-icon-badge"><i class="fas fa-file-lines"></i></div>
+                    <h3 class="feature-title">Accurate Citations</h3>
+                    <p class="feature-copy">Every answer is backed by constitutional text, so users can verify exactly where each response comes from.</p>
+                    <div class="feature-points">
+                        <span class="feature-point"><i class="fas fa-circle-check"></i> Article references</span>
+                        <span class="feature-point"><i class="fas fa-circle-check"></i> Clear source links</span>
+                        <span class="feature-point"><i class="fas fa-circle-check"></i> Trusted wording</span>
+                    </div>
+                </article>
+
+                <article class="feature-tile feature-tile--language">
+                    <div class="feature-icon-badge"><i class="fas fa-language"></i></div>
+                    <h3 class="feature-title">English & Twi Support</h3>
+                    <p class="feature-copy">Get answers in your preferred language for easier understanding.</p>
+                </article>
+
+                <article class="feature-tile feature-tile--speed">
+                    <div class="feature-icon-badge"><i class="fas fa-bolt"></i></div>
+                    <h3 class="feature-title">Instant Responses</h3>
+                    <p class="feature-copy">Ask a question and receive an answer in seconds.</p>
+                </article>
+
+                <article class="feature-tile feature-tile--free">
+                    <div class="feature-icon-badge"><i class="fas fa-star"></i></div>
+                    <h3 class="feature-title">Free to Use</h3>
+                    <p class="feature-copy">No registration and no subscription required.</p>
+                </article>
+
+                <article class="feature-tile feature-tile--online">
+                    <div class="feature-icon-badge"><i class="fas fa-globe"></i></div>
+                    <h3 class="feature-title">No Installation Needed</h3>
+                    <p class="feature-copy">Open the web app instantly in your browser and start asking right away.</p>
+                </article>
+
+                <article class="feature-tile feature-tile--mobile">
+                    <div class="feature-icon-badge"><i class="fas fa-mobile-screen"></i></div>
+                    <h3 class="feature-title">Mobile Friendly</h3>
+                    <p class="feature-copy">Works smoothly on phones, tablets, and desktops.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who Is It For? -->
+    <section class="py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="section-title">Who Is It For?</h2>
+                <p class="section-subtitle">Constitutional Helper serves everyone who wants to understand their rights</p>
+            </div>
+            
+            <div class="audience-bento">
+                <article class="audience-card audience-card-featured">
+                    <span class="audience-tag"><i class="fas fa-circle-check"></i> Most Popular</span>
+                    <div class="audience-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3 class="audience-title">Students</h3>
+                    <p class="audience-copy">Research constitutional topics for assignments, classroom discussions, and exam preparation with quick, trusted answers.</p>
+                </article>
+
+                <article class="audience-card audience-card--voters">
+                    <div class="audience-icon"><i class="fas fa-person-booth"></i></div>
+                    <h3 class="audience-title-sm">Voters</h3>
+                    <p class="audience-copy">Understand voting rights, election rules, and civic responsibilities before every election period.</p>
+                </article>
+
+                <article class="audience-card audience-card--teachers">
+                    <div class="audience-icon"><i class="fas fa-chalkboard-user"></i></div>
+                    <h3 class="audience-title-sm">Teachers</h3>
+                    <p class="audience-copy">Explain constitutional concepts to students clearly with practical examples and easy-to-read summaries.</p>
+                </article>
+
+                <article class="audience-card audience-card--citizens">
+                    <div class="audience-icon"><i class="fas fa-users"></i></div>
+                    <h3 class="audience-title-sm">Citizens</h3>
+                    <p class="audience-copy">Know your legal rights and responsibilities in everyday situations with confidence.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Access Section -->
+    <section id="access" class="section-alt py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="section-title">Access Constitutional Guide Online</h2>
+                <p class="section-subtitle">Open the app in your browser from any device with no installation.</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="border-2 border-brand-green rounded-2xl p-6 sm:p-8 bg-white">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-2xl">
+                            <i class="fas fa-globe text-brand-green"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">Web App</h3>
+                    </div>
+                    <p class="text-gray-600 mb-6">No installation needed.</p>
+                    
+                    <div class="space-y-3 mb-8 pb-8 border-b border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check text-brand-green"></i>
+                            <span class="text-gray-700">Works on any device instantly</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check text-brand-green"></i>
+                            <span class="text-gray-700">Always up-to-date automatically</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check text-brand-green"></i>
+                            <span class="text-gray-700">Mobile, tablet, and computer friendly</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-check text-brand-green"></i>
+                            <span class="text-gray-700">Save to home screen on mobile</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <p class="text-sm font-semibold text-gray-600 mb-3">How to Start</p>
+                        <ol class="text-sm text-gray-600 space-y-2">
+                            <li>1. Click "Try Online" button</li>
+                            <li>2. Page opens in browser instantly</li>
+                            <li>3. No app install or signup needed</li>
+                            <li>4. Start asking your questions</li>
+                        </ol>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <a href="https://constitutionalguider.streamlit.app/" class="btn-primary w-full text-center">
+                            <i class="fas fa-arrow-up-right-from-square mr-2"></i>Try Online Now
+                        </a>
+                        <a href="./constitution.pdf" download="Ghana_1992_Constitution.pdf" class="btn-secondary w-full text-center">
+                            <i class="fas fa-file-pdf mr-2"></i>Download Constitution PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section class="py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="section-title">Getting Started</h2>
+                <p class="section-subtitle">Choose your preferred way to use Constitutional Helper</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Web Users -->
+                <div class="bg-gray-50 rounded-lg p-6 sm:p-8">
+                    <div class="w-12 h-12 bg-brand-green rounded-lg flex items-center justify-center text-white text-xl mb-4">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-4">For Web Users</h3>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>Click "Try Online" button</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>Opens in your browser instantly</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>No signup required</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>Start asking questions immediately</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Mobile Users -->
+                <div class="bg-gray-50 rounded-lg p-6 sm:p-8">
+                    <div class="w-12 h-12 bg-brand-green rounded-lg flex items-center justify-center text-white text-xl mb-4">
+                        <i class="fas fa-mobile"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-4">For Mobile Users</h3>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>Visit web app on your phone</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>Tap "Add to Home Screen"</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>Use like a native mobile app</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check text-brand-green flex-shrink-0 mt-0.5"></i>
+                            <span>No app store installation needed</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section-alt py-14 sm:py-16 md:py-24 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is it free?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Yes, Constitutional Helper is completely free to use. No registration, no subscription fees, no hidden costs. Everyone in Ghana can access it for free.
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Do I need internet?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Yes. Constitutional Guide runs online in your browser, so you need internet access to use it.
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 3 -->
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How accurate are the answers?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Every answer is grounded in Ghana's 1992 Constitution with direct citations. The AI searches through constitutional articles and provides answers backed by official text. We continuously improve accuracy based on user feedback.
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 4 -->
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What if it gives a wrong answer?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        If you encounter an inaccurate answer, please report it through our GitHub repository. Your feedback helps us improve the system continuously.
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 5 -->
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What languages are supported?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Constitutional Helper currently supports English and Asante Twi. You can ask questions in either language and receive responses in your preferred language.
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 6 -->
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Do I need to install anything?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        No. You can open the app directly online with no installation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-brand-green py-16 md:py-24">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Start Understanding Your Constitutional Rights Today</h2>
+            <p class="text-green-100 mb-8 text-lg">Free • No signup • Available now</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://constitutionalguider.streamlit.app/" class="bg-white text-brand-green px-8 py-4 rounded-lg font-bold hover:bg-green-50 transition">
+                    <i class="fas fa-globe mr-2"></i>Open Web App Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-brand-green rounded-lg flex items-center justify-center text-white font-bold text-sm">CG</div>
+                        <span class="font-bold text-white">Constitutional Guide</span>
+                    </div>
+                    <p class="text-sm">Making Ghana's Constitution accessible to all</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#how-it-works" class="hover:text-brand-green transition">How it Works</a></li>
+                        <li><a href="#features" class="hover:text-brand-green transition">Features</a></li>
+                        <li><a href="#access" class="hover:text-brand-green transition">Access</a></li>
+                        <li><a href="#faq" class="hover:text-brand-green transition">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Access</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://constitutionalguider.streamlit.app/" class="hover:text-brand-green transition">Web App</a></li>
+                        <li><a href="https://github.com/Alphred-OB/constitutional_Helper_V2" class="hover:text-brand-green transition">GitHub</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Info</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-brand-green transition">About</a></li>
+                        <li><a href="#" class="hover:text-brand-green transition">Contact</a></li>
+                        <li><a href="https://github.com/Alphred-OB" class="hover:text-brand-green transition">GitHub Profile</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center text-sm">
+                    <p>&copy; 2026 Constitutional Helper. Made for Ghana.</p>
+                    <p class="mt-4 md:mt-0">Built with reliable AI and Streamlit</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-answer').forEach(el => {
+                if (el !== answer) {
+                    el.classList.remove('active');
+                    el.previousElementSibling.querySelector('i').classList.remove('rotate-180');
+                }
+            });
+            
+            // Toggle current FAQ
+            answer.classList.toggle('active');
+            icon.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+            icon.style.transition = 'transform 0.3s ease';
+        }
+    </script>
+</body>
+</html>

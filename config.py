@@ -13,7 +13,7 @@ import os
 #   LLM_MODEL = "llama-3.1-8b-instant"
 LLM_MODEL = "llama-3.1-8b-instant"
 LLM_MAX_TOKENS = 400  # Reduced for faster responses
-LLM_TEMPERATURE = 0.0  # Zero = maximum speed and determinism for factual Q&A
+LLM_TEMPERATURE = 0.5  # Increased from 0.0 to prevent repetition/looping in Twi
 
 # ─────────────────────────────────────────────────────────────────
 #  RAG CONFIGURATION
@@ -27,7 +27,7 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 # ─────────────────────────────────────────────────────────────────
 #  FILE CONFIGURATION
 # ─────────────────────────────────────────────────────────────────
-PDF_PATH = "constitution.pdf"
+PDF_PATH = "Ghana Constitution.pdf"
 PDF_MAX_SIZE_MB = 50
 
 # ─────────────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ PDF_MAX_SIZE_MB = 50
 PAGE_TITLE = "Constitutional Helper"
 PAGE_ICON = "favicon.png"
 APP_LAYOUT = "wide"
-SIDEBAR_STATE = "collapsed"
+SIDEBAR_STATE = "expanded"
 
 # ─────────────────────────────────────────────────────────────────
 #  THEME COLORS (Dark Slate #32394a)
@@ -77,11 +77,11 @@ DEFAULT_LANGUAGE = "English"
 # ─────────────────────────────────────────────────────────────────
 #  AUDIO SETTINGS
 # ─────────────────────────────────────────────────────────────────
-ENABLE_AUDIO = True  # Re-enabled for user
-AUDIO_MAX_LENGTH = 600  # Characters to convert to speech
-TTS_LANGUAGE_MAP = {
-    "English": "en-uk",
-    "Twi": "en",  # gTTS doesn't support Twi/Akan natively, falling back to English for playback
+ENABLE_AUDIO = True  
+AUDIO_MAX_LENGTH = 5000  # Increased for long constitutional articles
+TTS_VOICE_MAP = {
+    "English": "en-NG-AbeoNeural", # High-quality West African Voice (closest to Ghana)
+    "Twi": "en-NG-AbeoNeural",     
 }
 
 # ─────────────────────────────────────────────────────────────────
@@ -110,7 +110,6 @@ QUICK_TOPICS = {
 # At runtime, we use pre-processed chunks and embeddings
 REQUIRED_FILES = [
     (CHUNKS_PATH, "Constitution data chunks"),
-    (EMBEDDINGS_PATH, "Pre-computed embeddings"),
 ]
 
 REQUIRED_ENV_VARS = [

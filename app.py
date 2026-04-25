@@ -46,8 +46,9 @@ def set_cached_response(question: str, language: str, response: str) -> None:
 
 
 import streamlit as st
+import asyncio
+import edge_tts
 from groq import Groq
-from gtts import gTTS
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
 
@@ -314,14 +315,28 @@ def stream_res(question: str, language: str, client: Groq, chunks, embeddings):
     Handles small talk and greetings gracefully if no RAG results are found.
     """
     from rag import search, build_context
+    import time
+    
+    t0 = time.time()
     
     # Check for simple greetings
-    greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "how far", "maakye", "maaha", "maadwo"]
-    is_greeting = question.lower().strip().strip("?!.") in greetings
+    greetings = [
+        "hi", "hello", "hey", "good morning", "good afternoon", "good evening", 
+        "how far", "maakye", "maaha", "maadwo", "eti s3n", "ete sen", "enti s3n", "enti sen",
+        "wo ho te sen", "akwaaba", "yo", "sup"
+    ]
+    is_greeting = any(g in question.lower().strip() for g in greetings)
+
     
     # Step 1: Search (Wrapped in spinner in app.py)
     results = search(question, chunks, embeddings, top_n=RAG_TOP_N)
+    t1 = time.time()
+    logger.info(f"Search completed in {t1-t0:.3f}s")
+    
     context = build_context(results)
+    
+    # Logic: If it's a greeting OR results are empty OR results have very low scores (noise)
+    top_score = results[0]["score"] if results else 0
     
     if language == "Twi":
         lang_note = "Reply in simple Asante Twi. Write 'Ghana' as 'Gaana'. Keep sentences short."
@@ -330,18 +345,16 @@ def stream_res(question: str, language: str, client: Groq, chunks, embeddings):
         lang_note = "Reply in simple, straightforward English without legal jargon."
         greeting_fallback = "Hello! I am your Constitutional Helper. How can I help you understand Ghana's 1992 Constitution today?"
     
-    # If it's a greeting OR no results found, allow the AI to be conversational
-    if is_greeting or not results:
-        prompt = f"""You are Constitutional Helper, an expert ONLY on the 1992 Constitution of the Republic of GHANA.
+    # If it's a greeting OR no results found OR very low relevance (noise)
+    if is_greeting or not results or top_score < 0.32:
+        prompt = f"""You are Constitutional Helper, a friendly expert on the 1992 Constitution of the Republic of GHANA.
         The user said: '{question}'. 
-        {lang_note}
         
-        STRICT RULES:
-        1. NO HALLUCINATIONS: You are FORBIDDEN from using any knowledge about Ghana's laws or constitution that is not in the provided context. If the answer is not in the text, say: "I'm sorry, but the 1992 Constitution doesn't specifically cover this topic based on my current database."
-        2. NO INTRODUCTIONS: Do not start with "Here is...", "Based on...", or "Hello".
-        3. NO PLEASANTRIES: Do not end with "Hope this helps" or "Let me know if...".
-        4. IDENTITY: You are a direct, authoritative Ghanaian legal guide.
-        5. LANGUAGE: Respond warmly in {language} but stay professional.
+        INSTRUCTIONS:
+        - If the user is just saying hello or greeting you, greet them back warmly (using {language}) and ask how you can help them with the Constitution today.
+        - If the user asked a non-constitutional question, politely explain that you can only answer questions related to the 1992 Constitution of Ghana, and that their query doesn't match your database.
+        
+        IDENTITY: You are helpful, polite, and welcoming. Do not be overly strict or robotic about pleasantries.
         """
 
     else:
@@ -368,9 +381,12 @@ def stream_res(question: str, language: str, client: Groq, chunks, embeddings):
             model=LLM_MODEL,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=LLM_MAX_TOKENS,
-            temperature=LLM_TEMPERATURE,
+            temperature=0.5,
             stream=True,
         )
+        t2 = time.time()
+        logger.info(f"LLM stream initialized in {t2-t1:.3f}s")
+        
         for chunk in stream:
             if chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
@@ -426,8 +442,9 @@ def get_res(question: str, language: str, client: Groq, chunks, embeddings,
     # Step 3: Build language-specific LLM instructions
     if language == "Twi":
         lang_note = (
-            "Reply in simple Asante Twi. Use phonetically readable Twi words where possible. "
-            "Write 'Ghana' as 'Gaana' if it helps pronunciation. Keep sentences very short."
+            "Reply in natural Asante Twi. Be concise and conversational. "
+            "Do not repeat words or phrases excessively. "
+            "Write in standard Twi spelling."
         )
     else:
         lang_note = "Reply in simple, straightforward English without legal jargon."
@@ -480,26 +497,27 @@ Question: {question}"""
 # ─────────────────────────────────────────────────────────────────────────────
 def render_message(role: str, content: str, idx: int = None) -> None:
     """
-    Render a chat message with a professional, legal-brief inspired layout.
+    Render a chat message with Tailwind utility classes.
     """
     is_user = role == "user"
     user_icon = svg('user', 18, '#ffffff')
-    ai_icon = svg('scale', 18, 'currentColor')
+    ai_icon = svg('scale', 18, '#000000')
     
     if is_user:
         st.markdown(f"""
-        <div class="msg-row user">
-          <div class="avatar user">{user_icon}</div>
-          <div class="bubble user" style="border-radius: 12px 12px 0 12px;">{escape(content)}</div>
+        <div class="flex justify-end mb-8 animate-in fade-in slide-in-from-right duration-500">
+            <div class="max-w-[80%] bg-slate-100 border border-slate-200 p-5 rounded-2xl rounded-tr-none shadow-sm">
+                <div class="text-slate-900 text-[15px] leading-relaxed">{escape(content)}</div>
+            </div>
         </div>""", unsafe_allow_html=True)
     else:
         formatted = format_reply(content)
         st.markdown(f"""
-        <div style="margin-bottom: 32px; border-left: 4px solid var(--brand-500); padding-left: 24px; animation: fadeIn 0.5s ease-out;">
-            <div style="font-size: 11px; font-weight: 800; color: var(--brand-600); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <div class="mb-10 pl-6 border-l-4 border-black animate-in fade-in slide-in-from-left duration-500">
+            <div class="flex items-center gap-2 mb-4 text-[11px] font-bold text-black uppercase tracking-widest">
                 {ai_icon} Constitutional Analysis
             </div>
-            <div class="bubble ai" style="background: transparent; border: none; padding: 0; color: var(--text); font-size: 16px; line-height: 1.7;">
+            <div class="text-slate-900 text-base leading-loose">
                 {formatted}
             </div>
         </div>""", unsafe_allow_html=True)
@@ -511,36 +529,50 @@ def render_message(role: str, content: str, idx: int = None) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_audio(text: str, language: str) -> Optional[str]:
     """
-    Generate audio file and return base64-encoded data URL.
-    
-    Args:
-        text: Text to convert to speech
-        language: "English" or "Twi"
-    
-    Returns:
-        Optional[str]: Base64-encoded audio data URL, or None if failed
+    Generate audio file using edge-tts and return base64-encoded data URL.
     """
     if not ENABLE_AUDIO:
         return None
     
+    # Nested async function to handle edge-tts
+    async def _async_generate():
+        # Limit text length for audio (Edge handles ~20k, but 5k is safe)
+        clean_text = text[:AUDIO_MAX_LENGTH]
+        
+        # PHONETIC HACK: If language is Twi, replace special characters 
+        # so the neural voice can pronounce them naturally.
+        if language == "Twi":
+            clean_text = clean_text.replace("ɛ", "e").replace("Ɛ", "E")
+            clean_text = clean_text.replace("ɔ", "o").replace("Ɔ", "O")
+            # Remove parentheses content for cleaner audio
+            import re
+            clean_text = re.sub(r'\(.*?\)', '', clean_text)
+            
+        voice = TTS_VOICE_MAP.get(language, "en-NG-AbeoNeural")
+        
+        logger.info(f"Generating neural audio ({voice}, {len(clean_text)} chars)")
+        
+        communicate = edge_tts.Communicate(clean_text, voice)
+        
+        # Use a temporary buffer
+        audio_data = b""
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                audio_data += chunk["data"]
+        
+        if not audio_data:
+            return None
+            
+        b64 = base64.b64encode(audio_data).decode()
+        logger.info("Neural audio generated successfully")
+        # Return HTML audio tag with base64 data
+        return f'<audio autoplay controls style="width: 100%; border-radius: 8px; margin-top: 10px;"><source src="data:audio/mp3;base64,{b64}"></audio>'
+
     try:
-        # Limit text length for audio
-        text = text[:AUDIO_MAX_LENGTH]
-        lang_code = TTS_LANGUAGE_MAP.get(language, "en-uk")
-        
-        logger.info(f"Generating audio ({lang_code}, {len(text)} chars)")
-        tts = gTTS(text=text, lang=lang_code, slow=False)
-        
-        buf = io.BytesIO()
-        tts.write_to_fp(buf)
-        buf.seek(0)
-        
-        b64 = base64.b64encode(buf.read()).decode()
-        logger.info("Audio generated successfully")
-        return f'<audio autoplay controls><source src="data:audio/mp3;base64,{b64}"></audio>'
-    
+        # Run the async generator in the current thread
+        return asyncio.run(_async_generate())
     except Exception as e:
-        logger.error(f"Audio generation failed: {e}")
+        logger.error(f"Neural audio generation failed: {e}")
         return None
 
 
@@ -555,6 +587,15 @@ st.set_page_config(
     layout=APP_LAYOUT,
     initial_sidebar_state=SIDEBAR_STATE
 )
+
+# Inject Tailwind CSS CDN
+st.markdown("""
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+</style>
+""", unsafe_allow_html=True)
 
 # Initialize API clients and RAG (Lazy initialization or cached)
 client = initialize_groq_client()
@@ -640,20 +681,10 @@ en_active = "active" if lang == "English" else ""
 #  TOP LANGUAGE SELECTOR (Always Visible)
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown('<div style="margin-top:24px;"></div>', unsafe_allow_html=True)
-c1, c2, c3 = st.columns([1, 2, 1])
-with c2:
-    lang_options = ["English", "Twi"]
-    current_lang = st.session_state.get("language", DEFAULT_LANGUAGE)
-    new_lang = st.segmented_control(
-        "Choose Language / Pae mu kyerɛ kasa",
-        options=lang_options,
-        default=current_lang,
-        key="lang_selector",
-        label_visibility="collapsed"
-    )
-    if new_lang and new_lang != current_lang:
-        st.session_state.language = new_lang
-        st.rerun()
+# Main App Entry (Welcome screen or Chat)
+if len(st.session_state.messages) == 0:
+    pass # Will render below
+
 
 # Handle language selection via a hidden radio/button if needed, 
 # but for now let's use standard Streamlit buttons for reliability 
@@ -668,28 +699,72 @@ with c2:
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(f"""
-    <div style="padding: 20px 0 40px; text-align: center;">
-        <div style="width: 48px; height: 48px; background: var(--brand-600); border-radius: 12px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white;">
-            {svg('landmark', 24, 'currentColor')}
+    <div style="padding: 20px 0 32px; text-align: left; padding-left: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: var(--brand-600); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+                {svg('landmark', 20, 'currentColor')}
+            </div>
+            <div>
+                <div style="font-weight: 800; font-size: 16px; color: #0F172A; letter-spacing: -0.01em; line-height: 1.2;">GhanaLex</div>
+                <div style="font-size: 11px; color: #64748B; font-weight: 500;">Constitutional AI</div>
+            </div>
         </div>
-        <div style="font-weight: 800; font-size: 18px; color: white; letter-spacing: -0.02em;">GHANALEX</div>
-        <div style="font-size: 12px; color: #64748B; margin-top: 4px;">v2.0.4 Production</div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div style='margin-bottom: 20px; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 0.1em;'>RESOURCES</div>", unsafe_allow_html=True)
+    # Language Selector in Sidebar
+    st.markdown("<div style='margin-bottom: 8px; font-size: 11px; font-weight: 700; color: #000000; letter-spacing: 0.1em; padding-left: 4px;'>LANGUAGE</div>", unsafe_allow_html=True)
+    lang_options = ["English", "Twi"]
+    current_lang = st.session_state.get("language", DEFAULT_LANGUAGE)
+    new_lang = st.segmented_control(
+        "lang",
+        options=lang_options,
+        default=current_lang,
+        key="sidebar_lang",
+        label_visibility="collapsed"
+    )
+    if new_lang and new_lang != current_lang:
+        st.session_state.language = new_lang
+        st.rerun()
+
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 12px; font-size: 11px; font-weight: 700; color: #000000; letter-spacing: 0.1em; padding-left: 4px;'>EXPLORE</div>", unsafe_allow_html=True)
     
-    st.markdown(f"""<div style="margin-bottom: -40px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #94A3B8;">{svg('file-text', 14, 'currentColor')}</div>""", unsafe_allow_html=True)
+    # Navigation Links
+    st.markdown(f"""<div style="margin-bottom: -35px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #000000;">{svg('file-text', 14, '#000000')}</div>""", unsafe_allow_html=True)
     if st.button("      Documentation", use_container_width=True, key="sidebar_docs"):
         st.session_state.page = "docs"
         st.rerun()
         
-    st.markdown(f"""<div style="margin-bottom: -40px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #94A3B8;">{svg('settings', 14, 'currentColor')}</div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div style="margin-bottom: -35px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #000000;">{svg('help-circle', 14, '#000000')}</div>""", unsafe_allow_html=True)
     if st.button("      How it Works", use_container_width=True, key="sidebar_overview"):
         st.markdown(f'<meta http-equiv="refresh" content="0; url=SYSTEM_OVERVIEW.html">', unsafe_allow_html=True)
 
+    # Download Section
     st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
-    st.markdown("<div style='margin-bottom: 12px; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 0.1em;'>POPULAR TOPICS</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 12px; font-size: 11px; font-weight: 700; color: #000000; letter-spacing: 0.1em; padding-left: 4px;'>DOWNLOAD</div>", unsafe_allow_html=True)
+    
+    import config
+    pdf_file_path = os.path.join(os.path.dirname(__file__), config.PDF_PATH)
+    
+    if os.path.exists(pdf_file_path):
+        with open(pdf_file_path, "rb") as f:
+            pdf_bytes = f.read()
+
+        
+        st.markdown(f"""<div style="margin-bottom: -35px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #000000;">{svg('download', 14, '#000000')}</div>""", unsafe_allow_html=True)
+        st.download_button(
+            label="      Download Constitution",
+            data=pdf_bytes,
+            file_name="1992_Constitution_of_Ghana.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+            key="sidebar_download_v3"
+        )
+
+
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 12px; font-size: 11px; font-weight: 700; color: #000000; letter-spacing: 0.1em; padding-left: 4px;'>QUICK TOPICS</div>", unsafe_allow_html=True)
     
     for label, question in QUICK_TOPICS.items():
         if st.button(label, use_container_width=True, key=f"topic_{label}", type="secondary"):
@@ -697,10 +772,12 @@ with st.sidebar:
             st.rerun()
 
     st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)
-    st.markdown(f"""<div style="margin-bottom: -45px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #94A3B8;">{svg('trash', 16, 'currentColor')}</div>""", unsafe_allow_html=True)
-    if st.button("      Clear Chat", use_container_width=True, key="btn_clear", type="secondary"):
+    st.markdown(f"""<div style="margin-bottom: -35px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: #000000;">{svg('trash', 14, 'currentColor')}</div>""", unsafe_allow_html=True)
+    if st.button("      Clear Conversation", use_container_width=True, key="btn_clear", type="secondary"):
         st.session_state.messages = []
         st.rerun()
+
+
 
 
 
@@ -709,75 +786,19 @@ with st.sidebar:
 # ─────────────────────────────────────────────────────────────────────────────
 if len(st.session_state.messages) == 0:
     st.markdown(f"""
-    <div style="padding: 40px 0 20px; text-align: center;">
-      <div style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; 
-                  background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); 
-                  border-radius: 100px; color: var(--brand-600); font-size: 13px; font-weight: 600; 
-                  margin-bottom: 24px; animation: fadeIn 0.8s ease-out;">
-        {svg('shield', 14, 'currentColor')} 1992 Constitution of Ghana
-      </div>
-      <h1 style="font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; 
-                 background: linear-gradient(135deg, #0F172A 0%, #3B82F6 100%); 
-                 -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        The Constitution,<br/>Simplified.
-      </h1>
-      <p style="font-size: 16px; color: var(--text-2); max-width: 520px; margin: 0 auto 32px; line-height: 1.6;">
-        Ask anything about our supreme law or choose a popular topic below to get started.
-      </p>
+    <div class="max-w-2xl mx-auto py-16 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-slate-600 text-xs font-bold mb-6 tracking-wide">
+            {svg('shield', 14, '#475569')} 1992 CONSTITUTION OF GHANA
+        </div>
+        <h1 class="text-5xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
+            The Constitution,<br/><span class="text-slate-400">Simplified.</span>
+        </h1>
+        <p class="text-lg text-slate-500 max-w-lg mx-auto mb-10 leading-relaxed font-medium">
+            Understand your rights and the laws of Ghana with our AI-powered assistant.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div style="font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; 
-                letter-spacing: 0.1em; margin-bottom: 16px; text-align: center;">
-        POPULAR INQUIRIES
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Icon mapping for topics
-    topic_icons = {
-        "Police & Arrests": "shield",
-        "Fundamental Rights": "landmark",
-        "Presidential Rules": "crown",
-        "Making Laws": "file-text",
-        "Land & Property": "map-pin",
-        "Voting Rights": "vote",
-        "Amending the Law": "settings"
-    }
-
-    # Render popular questions as high-end Bento Cards
-    topics = list(QUICK_TOPICS.items())
-    
-    # 2x4 Grid logic using columns
-    for i in range(0, len(topics), 2):
-        cols = st.columns(2)
-        for j in range(2):
-            if i + j < len(topics):
-                label, question = topics[i + j]
-                icon_name = topic_icons.get(label, "scale")
-                
-                with cols[j]:
-                    # The Interaction Wrapper
-                    st.markdown('<div class="topic-card-wrapper">', unsafe_allow_html=True)
-                    
-                    # 1. The Visual Card
-                    st.markdown(f"""
-                    <div class="topic-card">
-                        <div class="icon-wrapper">
-                            {svg(icon_name, 22, 'currentColor')}
-                        </div>
-                        <div class="label">{label}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # 2. The Invisible Interaction Layer
-                    st.markdown('<div class="overlay-btn">', unsafe_allow_html=True)
-                    if st.button(f"Select {label}", key=f"topic_btn_{i+j}"):
-                        st.session_state.pending_question = question
-                        st.rerun()
-                    st.markdown('</div>', unsafe_allow_html=True) # close overlay-btn
-                    
-                    st.markdown('</div>', unsafe_allow_html=True) # close topic-card-wrapper
 
 
     st.markdown("<div style='height:40px'></div>", unsafe_allow_html=True)
@@ -794,9 +815,11 @@ for i, msg in enumerate(st.session_state.messages):
     render_message(msg["role"], msg["content"], idx=i)
     
     if msg["role"] == "assistant":
-        st.markdown(f"""<div style="margin-bottom: -45px; margin-left: 12px; position: relative; z-index: 10; pointer-events: none; color: var(--brand-500);">{svg('volume', 16, 'currentColor')}</div>""", unsafe_allow_html=True)
-        if st.button("      Hear Reference", key=f"spk_{i}"):
-            st.session_state.speak_index = i
+        # Simple, professional text button
+        c1, _ = st.columns([1, 4])
+        with c1:
+            if st.button("Listen", key=f"spk_{i}", help="Hear this constitutional reference", type="secondary"):
+                st.session_state.speak_index = i
     
     if msg["role"] == "assistant" and st.session_state.speak_index == i:
         audio_html = generate_audio(msg["content"], st.session_state.language)
@@ -837,20 +860,33 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     last_query = st.session_state.messages[-1]["content"]
     language = st.session_state.get("language", DEFAULT_LANGUAGE)
     
-    # Render the assistant avatar and start the bubble
+    # We use a placeholder to stream into our custom HTML bubble
+    placeholder = st.empty()
+    full_response = ""
     ai_icon = svg('scale', 18, '#3b82f6')
-    st.markdown(f"""
-    <div class="msg-row">
-      <div class="avatar ai">{ai_icon}</div>
-      <div class="bubble ai" id="streaming-bubble">
-    """, unsafe_allow_html=True)
     
-    with st.spinner("Thinking..."):
-        response_generator = stream_res(last_query, language, client, chunks, embeddings)
-        full_response = st.write_stream(response_generator)
+    for chunk in stream_res(last_query, language, client, chunks, embeddings):
+        full_response += chunk
+        # Re-render the whole bubble with the current progress
+        # We process the text to handle the references section and basic formatting
+        formatted = format_reply(full_response)
+        
+        placeholder.markdown(f"""
+        <div class="msg-row">
+          <div class="avatar ai">{ai_icon}</div>
+          <div class="bubble ai">
+            <div class="legal-header">
+                {svg('scale', 14, 'currentColor')} CONSTITUTIONAL ANALYSIS
+            </div>
+            <div style="color: var(--text); font-size: 16px; line-height: 1.7;">
+                {formatted}
+            </div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    # Close the bubble div
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    # Final cleanup if needed (placeholder already has the full response)
+
     
     if full_response:
         st.session_state.messages.append({"role": "assistant", "content": full_response})
